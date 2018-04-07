@@ -1,72 +1,60 @@
 <?php
-class Admin extends DatabaseObject
-{
-     protected static $table_name = 'admins';
-     protected static $db_columns =
-     [
-        'id',
-        'first_name',
-        'last_name',
-        'email',
-        'username',
-        'hashed_password',
-      ];
 
-      public $id;
-      public $first_name;
-      public $last_name;
-      public $email;
-      public $username;
-      protected $hashed_password;
-      public $password;
-      public $confirm_password;
-      protected $password_required = true;
+class Admin extends DatabaseObject {
 
-    public function __construct($args = [])
-    {
-        $this->first_name        = $args['first_name'] ?? '';
-        $this->last_name         = $args['last_name'] ?? '';
-        $this->email            = $args['email'] ?? '';
-        $this->username         = $args['username'] ?? '';
-        $this->password         = $args['password'] ?? '';
-        $this->confirm_password = $args['confirm_password'] ?? '';
-    }
+  static protected $table_name = "admins";
+  static protected $db_columns = ['id', 'first_name', 'last_name', 'email', 'username', 'hashed_password'];
 
-    public function full_name()
-    {
-        echo "{$this->first_name}  {$this->last_name}";
-    }
+  public $id;
+  public $first_name;
+  public $last_name;
+  public $email;
+  public $username;
+  protected $hashed_password;
+  public $password;
+  public $confirm_password;
+  protected $password_required = true;
 
-    protected function set_hashed_password()
-    {
-        $this->hashed_password = password_hash($this->password,PASSWORD_BCRYPT);
-    }
+  public function __construct($args=[]) {
+    $this->first_name = $args['first_name'] ?? '';
+    $this->last_name = $args['last_name'] ?? '';
+    $this->email = $args['email'] ?? '';
+    $this->username = $args['username'] ?? '';
+    $this->password = $args['password'] ?? '';
+    $this->confirm_password = $args['confirm_password'] ?? '';
+  }
 
-    public function verify_password($password)
-    {
-      return password_verify($password,$this->hashed_password);
-    }
+  public function full_name() {
+    return $this->first_name . " " . $this->last_name;
+  }
 
-    protected function create()
-    {
+  protected function set_hashed_password() {
+    $this->hashed_password = password_hash($this->password, PASSWORD_BCRYPT);
+  }
+
+  public function verify_password($password) {
+    return password_verify($password, $this->hashed_password);
+  }
+
+  protected function create() {
+    $this->set_hashed_password();
+    return parent::create();
+  }
+
+  protected function update() {
+    if($this->password != '') {
       $this->set_hashed_password();
-      return parent::create();
+      // validate password
+    } else {
+      // password not being updated, skip hashing and validation
+      $this->password_required = false;
     }
+    return parent::update();
+  }
 
-    protected function update()
-    {
-      if($this->password != ''){
-        // validation
-        $this->set_hashed_password();
-      }else{
-        $this->password_required = false;
-      }
-      return parent::update();
-    }
-
-    protected function validate()
-    {
+  protected function validate() {
     $this->errors = [];
+
     if(is_blank($this->first_name)) {
       $this->errors[] = "First name cannot be blank.";
     } elseif (!has_length($this->first_name, array('min' => 2, 'max' => 255))) {
@@ -91,11 +79,11 @@ class Admin extends DatabaseObject
       $this->errors[] = "Username cannot be blank.";
     } elseif (!has_length($this->username, array('min' => 8, 'max' => 255))) {
       $this->errors[] = "Username must be between 8 and 255 characters.";
-    }else if(!has_unique_username($this->username,$this->id ?? 0)){
-      $this->errors[] = "Username is already exists";
+    } elseif (!has_unique_username($this->username, $this->id ?? 0)) {
+      $this->errors[] = "Username not allowed. Try another.";
     }
 
-    if($this->password_required){
+    if($this->password_required) {
       if(is_blank($this->password)) {
         $this->errors[] = "Password cannot be blank.";
       } elseif (!has_length($this->password, array('min' => 12))) {
@@ -116,15 +104,21 @@ class Admin extends DatabaseObject
         $this->errors[] = "Password and confirm password must match.";
       }
     }
+
     return $this->errors;
   }
 
-  public static function find_by_username($username)
-  {
-     $obj_array = static::find_by_sql("SELECT * FROM " . static::$table_name . " WHERE username =". static::$db->quote($username));
-     return $obj_array = array_shift($obj_array) ?? false;
+  static public function find_by_username($username) {
+    $sql = "SELECT * FROM " . static::$table_name . " ";
+    $sql .= "WHERE username='" . self::$database->escape_string($username) . "'";
+    $obj_array = static::find_by_sql($sql);
+    if(!empty($obj_array)) {
+      return array_shift($obj_array);
+    } else {
+      return false;
+    }
   }
 
-
-
 }
+
+?>

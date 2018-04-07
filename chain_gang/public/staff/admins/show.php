@@ -1,4 +1,5 @@
 <?php require_once('../../../private/initialize.php'); ?>
+<?php require_login(); ?>
 
 <?php
 
@@ -8,7 +9,7 @@ $admin = Admin::find_by_id($id);
 
 ?>
 
-<!-- <?php $page_title = 'Show Admin: ' . h($admin->full_name()); ?> -->
+<?php $page_title = 'Show Admin: ' . h($admin->full_name()); ?>
 <?php include(SHARED_PATH . '/staff_header.php'); ?>
 
 <div id="content">

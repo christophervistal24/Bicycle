@@ -1,4 +1,5 @@
 <?php require_once('../../../private/initialize.php'); ?>
+<?php require_login(); ?>
 
 <?php
 
@@ -54,7 +55,7 @@ $bicycle = Bicycle::find_by_id($id);
       </dl>
       <dl>
         <dt>Price</dt>
-        <dd><?php echo '$' . h(number_format($bicycle->price,2)); ?></dd>
+        <dd><?php echo h(money_format('$%i', $bicycle->price)); ?></dd>
       </dl>
       <dl>
         <dt>Description</dt>

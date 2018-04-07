@@ -1,24 +1,24 @@
 <?php require_once('../private/initialize.php'); ?>
 
 <?php
+
   // Get requested ID
-  if(isset($_GET['id'])){
-      $id = h($_GET['id']) ?? false;
-     // Find bicycle using ID
-    if(!$id){
-        redirect_to('bicycles.php');
-    }else{
-      $bike = Bicycle::find_by_id($id);
-    }
+
+  $id = $_GET['id'] ?? false;
+
+  if(!$id) {
+    redirect_to('bicycles.php');
   }
 
+  // Find bicycle using ID
+
+  $bike = Bicycle::find_by_id($id);
+
 ?>
 
-<?php $page_title = 'Detail' . $bike->name(); ?>
+<?php $page_title = 'Detail: ' . $bike->name(); ?>
 <?php include(SHARED_PATH . '/public_header.php'); ?>
-<?php
 
-?>
 <div id="main">
 
   <a href="bicycles.php">Back to Inventory</a>
@@ -60,13 +60,14 @@
       </dl>
       <dl>
         <dt>Price</dt>
-        <dd><?php echo '$' . h(number_format($bike->price,2)); ?></dd>
+        <dd><?php echo h(money_format('$%i', $bike->price)); ?></dd>
       </dl>
       <dl>
         <dt>Description</dt>
         <dd><?php echo h($bike->description); ?></dd>
       </dl>
     </div>
+
   </div>
 
 </div>

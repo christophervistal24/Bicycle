@@ -2,14 +2,17 @@
 
 require_once('../../../private/initialize.php');
 
+require_login();
+
 if(!isset($_GET['id'])) {
   redirect_to(url_for('/staff/bicycles/index.php'));
 }
 $id = $_GET['id'];
 $bicycle = Bicycle::find_by_id($id);
-  if($bicycle == false){
-    redirect_to(url_for('/staff/bicycles/index.php'));
-  }
+if($bicycle == false) {
+  redirect_to(url_for('/staff/bicycles/index.php'));
+}
+
 if(is_post_request()) {
 
   // Save record using post parameters
@@ -17,8 +20,8 @@ if(is_post_request()) {
   $bicycle->merge_attributes($args);
   $result = $bicycle->save();
 
-  if($result == true) {
-    $_SESSION['message'] = 'The bicycle was updated successfully.';
+  if($result === true) {
+    $session->message('The bicycle was updated successfully.');
     redirect_to(url_for('/staff/bicycles/show.php?id=' . $id));
   } else {
     // show errors

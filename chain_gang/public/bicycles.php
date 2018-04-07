@@ -26,7 +26,9 @@
       </tr>
 
 <?php
+
 $bikes = Bicycle::find_all();
+
 ?>
       <?php foreach($bikes as $bike) { ?>
       <tr>
@@ -36,14 +38,13 @@ $bikes = Bicycle::find_all();
         <td><?php echo h($bike->category); ?></td>
         <td><?php echo h($bike->gender); ?></td>
         <td><?php echo h($bike->color); ?></td>
-        <td><?php echo '$' . h(number_format($bike->price,2)); ?></td>
-        <td><a href="detail.php?id=<?php echo $bike->id; ?>">View details</a></td>
+        <td><?php echo h(money_format('$%i', $bike->price)); ?></td>
+        <td><a href="detail.php?id=<?php echo $bike->id; ?>">View</a></td>
       </tr>
       <?php } ?>
 
-
-
     </table>
+
   </div>
 
 </div>

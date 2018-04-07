@@ -1,9 +1,5 @@
 <?php require_once('../private/initialize.php'); ?>
-<?php
-    if(!$session->is_logged_in()){
-        redirect_to(url_for('/login.php'));
-    }
-?>
+
 <?php include(SHARED_PATH . '/public_header.php'); ?>
 
 <div id="main">
